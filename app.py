@@ -1,33 +1,52 @@
 import streamlit as st
 import time
 
-st.set_page_config(page_title="集中タイム", page_icon="⏳")
+# 1. ブラウザのタブ設定
+st.set_page_config(
+    page_title="My集中タイマー", 
+    page_icon="⏰",
+    layout="centered"
+)
 
-st.title("⏳ 集中タイマー")
-st.write("25分の集中と、5分の休憩を繰り返しましょう。")
+# 2. 音を鳴らすための魔法（関数）
+def play_sound(url):
+    # ブラウザで音を再生するHTMLコード
+    sound_html = f"""
+    <audio autoplay>
+    <source src="{url}" type="audio/mp3">
+    </audio>
+    """
+    st.components.v1.html(sound_html, height=0)
 
-# タブでモードを切り替え
+st.title("⏰ 集中タイマー (音あり)")
+
 tab1, tab2 = st.tabs(["集中モード", "休憩モード"])
 
 with tab1:
-    st.subheader("25分間、目の前のことに集中！")
-    if st.button("25分タイマー開始"):
-        progress_bar = st.progress(0)
-        status_text = st.empty()
+    st.subheader("25分間、全力投球！")
+    if st.button("集中スタート"):
+        # スタート時の音（短いチャイム）
+        play_sound("https://actions.google.com/sounds/v1/foley/beeps_short_half_second.ogg")
         
-        for percent_complete in range(100):
-            # 25分間を100分割して進める（デモ用に短くしたい場合は 15.0 を 0.1 とかにしてね）
-            time.sleep(15.0) 
-            progress_bar.progress(percent_complete + 1)
-            status_text.text(f"集中度: {percent_complete + 1}%")
-            
+        progress_bar = st.progress(0)
+        for i in range(100):
+            time.sleep(15) # 実際は15秒 × 100 = 25分
+            progress_bar.progress(i + 1)
+        
         st.balloons()
-        st.success("お疲れ様です！5分間の休憩に入りましょう。")
+        # 終了時の音（ベルの音）
+        play_sound("https://actions.google.com/sounds/v1/alarms/alarm_clock_short.ogg")
+        st.success("25分経過！お疲れ様でした。")
 
 with tab2:
-    st.subheader("ゆっくり休みましょう")
-    if st.button("5分タイマー開始"):
-        st.info("休憩中です...")
-        time.sleep(5) # 実際は300秒ですが、動作確認用に短くしています
+    st.subheader("ゆっくり休憩")
+    if st.button("休憩スタート"):
+        play_sound("https://actions.google.com/sounds/v1/foley/beeps_short_half_second.ogg")
+        
+        st.info("5分間の休憩中...")
+        time.sleep(300) # 300秒 = 5分
+        
         st.snow()
-        st.success("休憩終了！さあ、次へ進みましょう。")
+        play_sound("https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg")
+        st.success("休憩終了！")
+
